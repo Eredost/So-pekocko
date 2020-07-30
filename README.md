@@ -1,4 +1,4 @@
-#So Pekocko
+# So Pekocko
 
 Sixth project of the new web developer course at Openclassrooms. 
 
