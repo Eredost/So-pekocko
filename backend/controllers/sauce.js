@@ -23,7 +23,10 @@ exports.createSauce = (req, res, next) => {
     });
     sauce.save()
         .then(() => res.status(200).json({ message: 'Sauce ajoutée !' }))
-        .catch(error => res.status(400).json({ error }));
+        .catch(error => {
+            console.log(error);
+            return res.status(400).json({ error });
+        });
 };
 
 exports.modifySauce = (req, res, next) => {
@@ -43,6 +46,7 @@ exports.deleteSauce = (req, res, next) => {
             const decodedToken = jwt.decode(req.headers.authorization.split(' ')[1], process.env.JWT_SECRET_TOKEN);
             const userId = decodedToken.userId;
 
+            // Checks if the user ID matches that of the object to delete
             if (sauce.userId === userId) {
                 const filename = sauce.imageUrl.split('/images/')[1];
                 fs.unlink(`images/${filename}`, () => {
@@ -86,7 +90,7 @@ exports.likeSauce = (req, res, next) => {
             sauce.dislikes = sauce.usersDisliked.length;
             sauce.save()
                 .then(() => res.status(200).json({ message: 'Compteurs de likes mis à jour !' }))
-                .catch(error => res.status(400).json({ error }));
+                .catch(error => res.status(400).json({error}));
         })
         .catch(error => res.status(400).json({ error }));
 };

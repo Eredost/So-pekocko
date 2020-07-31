@@ -12,8 +12,10 @@ const sauceRoutes = require('./routes/sauce');
 
 const app = express();
 
+// Setup HTTP response headers
 app.use(helmet());
 
+// Limit number of requests per 15 minutes
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100
@@ -28,7 +30,7 @@ mongoose.connect(process.env.MONGODB_URI, {
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-// Configuring HTTP Headers
+// Configuring CORS Headers
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
@@ -36,6 +38,7 @@ app.use((req, res, next) => {
     next();
 });
 
+// Parse incoming request bodies in json format
 app.use(bodyParser.json());
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
