@@ -1,5 +1,6 @@
 const Sauce = require('../models/Sauce');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
 
 exports.getAllSauces = (req, res, next) => {
     Sauce.find()
@@ -38,12 +39,19 @@ exports.modifySauce = (req, res, next) => {
 exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
         .then(sauce => {
-            const filename = sauce.imageUrl.split('/images/')[1];
-            fs.unlink(`images/${filename}`, () => {
-                Sauce.deleteOne({ _id: req.params.id })
-                    .then(() => res.status(200).json({ message: 'Sauce supprimée !' }))
-                    .catch(error => res.status(404).json({ error }));
-            })
+            const decodedToken = jwt.decode(req.headers.authorization.split(' ')[1], 'lyHPzb4Tfn619dQF47GiWEItn7Ky');
+            const userId = decodedToken.userId;
+
+            if (sauce.userId === userId) {
+                const filename = sauce.imageUrl.split('/images/')[1];
+                fs.unlink(`images/${filename}`, () => {
+                    Sauce.deleteOne({ _id: req.params.id })
+                        .then(() => res.status(200).json({ message: 'Sauce supprimée !' }))
+                        .catch(error => res.status(404).json({ error }));
+                })
+            } else {
+                res.status(401).json({ error: 'Identifiant utilisateur invalide !' });
+            }
         })
         .catch(error => res.status(404).json({ error }))
 };
