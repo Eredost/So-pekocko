@@ -1,6 +1,7 @@
 const Sauce = require('../models/Sauce');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 exports.getAllSauces = (req, res, next) => {
     Sauce.find()
@@ -39,7 +40,7 @@ exports.modifySauce = (req, res, next) => {
 exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
         .then(sauce => {
-            const decodedToken = jwt.decode(req.headers.authorization.split(' ')[1], 'lyHPzb4Tfn619dQF47GiWEItn7Ky');
+            const decodedToken = jwt.decode(req.headers.authorization.split(' ')[1], process.env.JWT_SECRET_TOKEN);
             const userId = decodedToken.userId;
 
             if (sauce.userId === userId) {
@@ -79,7 +80,7 @@ exports.likeSauce = (req, res, next) => {
                     }
                     break;
                 default:
-                    return res.status(500).json({ error: 'Valeur de like invalide !' });
+                    return res.status(400).json({ error: 'Valeur de like invalide !' });
             }
             sauce.likes = sauce.usersLiked.length;
             sauce.dislikes = sauce.usersDisliked.length;
