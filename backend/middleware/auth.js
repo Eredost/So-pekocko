@@ -2,6 +2,10 @@ const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
     try {
+        if (!req.headers.authorization) {
+            throw 'Token d\'authentification manquant !';
+        }
+
         const token = req.headers.authorization.split(' ')[1];
         const decodedToken = jwt.verify(token, 'lyHPzb4Tfn619dQF47GiWEItn7Ky');
         const userId = decodedToken.userId;
@@ -12,6 +16,6 @@ module.exports = (req, res, next) => {
             next();
         }
     } catch (error) {
-        res.status(401).json({ error: error | 'Requête non authentifiée' });
+        res.status(401).json({ error });
     }
 };
