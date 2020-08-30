@@ -33,7 +33,7 @@ exports.login = (req, res, next) => {
         .then(user => {
             // Checks if the searched user exists
             if (!user) {
-                return res.status(401).json({ error: 'Utilisateur introuvable !' })
+                return res.status(401).json({ error: 'Email introuvable !' })
             }
 
             // Compare the password of the recovered user with the password entered in the login form
